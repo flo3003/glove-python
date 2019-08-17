@@ -12,7 +12,7 @@ except ImportError:
 import numpy as np
 import scipy.sparse as sp
 import numbers
-
+from os.path import expanduser
 from .glove_cython import fit_vectors, transform_paragraph
 
 
@@ -96,6 +96,8 @@ class Glove(object):
         self.word_vectors = ((random_state.rand(shape[0],
                                                 self.no_components) - 0.5)
                              / self.no_components)
+        home = expanduser("~")
+        np.savetxt('random_initial_vectors.txt', self.word_vectors, fmt='%.3f', delimiter=' ')
         self.word_biases = np.zeros(shape[0],
                                     dtype=np.float64)
 

@@ -1,0 +1,14 @@
+setup.cfg
+glove/__init__.py
+glove/corpus.py
+glove/corpus_cython.cpp
+glove/glove.py
+glove/glove_cython.c
+glove/metrics/__init__.py
+glove/metrics/accuracy.py
+glove/metrics/accuracy_cython.c
+glove_python.egg-info/PKG-INFO
+glove_python.egg-info/SOURCES.txt
+glove_python.egg-info/dependency_links.txt
+glove_python.egg-info/requires.txt
+glove_python.egg-info/top_level.txt

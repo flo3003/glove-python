@@ -5,13 +5,14 @@ except ImportError:
 import numpy as np
 
 from .accuracy_cython import compute_rank_violations
+from .accuracy_cython import compute_modified_rank_violations
 
 
 def read_analogy_file(filename):
     """
     Read the analogy task test set from a file.
     """
-    
+
     section = None
 
     with open(filename, 'r') as questions_file:
@@ -42,7 +43,7 @@ def construct_analogy_test_set(test_examples, dictionary, ignore_missing=False):
     """
 
     test = []
-    
+
     for example in test_examples:
         try:
             test.append([dictionary[word] for word in example])
@@ -103,3 +104,61 @@ def analogy_rank_score(analogies, word_vectors, no_threads=1):
                             no_threads)
 
     return rank_violations / float(word_vectors.shape[0])
+
+def modified_analogy_rank_score(analogies, word_vectors, trust, no_threads=1):
+    """
+    Calculate the analogy rank score for the given set of analogies.
+
+    A rank of zero denotes a perfect score; with random word vectors
+    we would expect a rank of 0.5.
+
+    Arguments:
+    - analogies: a numpy array holding the ids of the words in the analogy tasks,
+                 as constructed by `construct_analogy_test_set`.
+    - word_vectors: numpy array holding the word vectors to use.
+    - num_threads: number of parallel threads to use in the calculation.
+
+    Returns:
+    - ranks: a numpy array holding the normalized rank of the target word
+             in each analogy task. Rank 0 means that the target words was
+             returned first; rank 1 means it was returned last.
+    """
+
+    # The mean of the vectors for the
+    # second, third, and the negative of
+    # the first word.
+    input_vectors = (word_vectors[analogies[:, 1]]
+                     + word_vectors[analogies[:, 2]]
+                     - word_vectors[analogies[:, 0]])
+
+    word_vector_norms = np.linalg.norm(word_vectors,
+                                       axis=1)
+
+    # Pre-allocate the array storing the rank violations
+    rank_violations = np.zeros(input_vectors.shape[0], dtype=np.int32)
+    rank_neighbors = np.zeros(input_vectors.shape[0], dtype=np.int32)
+
+    neigh_size=[]
+
+    for i in range(len(trust)):
+      neigh_size.append(len(trust[i]))
+
+    neigh_size=np.int32(np.array(neigh_size))
+
+
+    flat_list = [item for sublist in trust for item in sublist]
+
+    lexicon_array=np.int32(np.array(flat_list))
+
+    compute_modified_rank_violations(word_vectors,
+                                     word_vector_norms,
+                                     input_vectors,
+                                     analogies[:, 3],
+                                     analogies,
+                                     rank_violations,
+                                     rank_neighbors,
+                                     lexicon_array,
+                                     neigh_size,
+                                     no_threads)
+
+    return rank_violations / float(word_vectors.shape[0]) , rank_neighbors

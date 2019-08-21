@@ -111,7 +111,7 @@ if __name__ == '__main__':
 
             glove = Glove(no_components=int(args.emb_dim))
             glove.fit(corpus_model.matrix, epochs=1,
-                      no_threads=args.parallelism, verbose=True)
+                      no_threads=args.parallelism)
             glove.add_dictionary(corpus_model.dictionary)
             glove.save('glove.model')
 

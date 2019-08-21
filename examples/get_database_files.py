@@ -75,7 +75,7 @@ if __name__ == '__main__':
     else:
         if args.create:
             # Build the corpus dictionary and the cooccurrence matrix.
-            print('Pre-processing corpus')
+            print('Pre-processing Corpus')
 
             if args.wiki:
                 print('Using wikipedia corpus')
@@ -126,6 +126,7 @@ if __name__ == '__main__':
 
     if args.ontology:
     	#CREATE AND SAVE THE ONTOLOGY
+	print("Creating Semantic Relations from Lexicon...")
         ontology_filename=args.ontology
     	lexicon = {}
     	cnt = 0
@@ -146,4 +147,4 @@ if __name__ == '__main__':
         new_fname=os.path.basename(ontology_filename)
     	df=pd.DataFrame(d, columns=('source_id', 'target_id', 'semantic_value'))
     	df.to_csv(new_fname[:-4]+".csv", sep=',', index=False)
-        print("Lexicon Saved")
+        print("Lexicon Relations Saved")
